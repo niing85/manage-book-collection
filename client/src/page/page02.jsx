@@ -1,12 +1,13 @@
-import './App.css'
+import { useState } from 'react'
 import { Link } from 'react-router-dom';
 
 
-function App() {
+function Page02() {
+
 
   return (
     <>
-      <h1>App</h1>
+      <h1>Page 02</h1>
       <nav>
         <ul>
           <li>
@@ -27,4 +28,4 @@ function App() {
   )
 }
 
-export default App
+export default Page02

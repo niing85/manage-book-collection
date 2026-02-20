@@ -1,6 +1,7 @@
 import { Router } from "express";
 import connectPool from "../utils/db.mjs";
 import { validateCreatBookData } from '../middleware/book.validation.mjs';
+import { authenticateToken } from '../middleware/protec.mjs';
 
 const bookRouter = Router();
 
@@ -9,8 +10,8 @@ dotenv.config();
 
 let result;
 
-//เพิ่มหนังสือ
-bookRouter.post('/', [validateCreatBookData], async (req, res) => {
+//เพิ่มหนังสือ (ต้อง login ก่อน)
+bookRouter.post('/', [authenticateToken, validateCreatBookData], async (req, res) => {
     try {
         const newBook = {
             ...req.body,
@@ -86,8 +87,8 @@ bookRouter.get ('/:bookId', async (req, res) => {
     return res.status(200).json(result.rows);
 });
 
-//แก้ไขข้อมูลหนังสือ
-bookRouter.put ('/:bookId', [validateCreatBookData], async (req, res) => {
+//แก้ไขข้อมูลหนังสือ (ต้อง login ก่อน)
+bookRouter.put ('/:bookId', [authenticateToken, validateCreatBookData], async (req, res) => {
     const bookIdFromClient = req.params.bookId;
     const updatedBook = {...req.body}
     try {
@@ -107,11 +108,11 @@ bookRouter.put ('/:bookId', [validateCreatBookData], async (req, res) => {
         // console.error(error);
         return res.status(500).json({ message: 'Internal server error' });
     }
-    return res.status(200).json({message: "Updated book successfully"});
+    return res.status(200).json({message: 'Updated book successfully'});
 });
 
-//การลบข้อมูลหนังสือ
-bookRouter.delete ('/:bookId', async (req, res) => {
+//การลบข้อมูลหนังสือ (ต้อง login ก่อน)
+bookRouter.delete ('/:bookId', authenticateToken, async (req, res) => {
     const bookIdFromClient = req.params.bookId;
     try {
         result = await connectPool.query(
@@ -127,7 +128,7 @@ bookRouter.delete ('/:bookId', async (req, res) => {
         // console.error(error);
         return res.status(500).json({ message: 'Internal server error' });
     }
-    return res.status(200).json({message: "Delete book successfully"});
+    return res.status(200).json({message: 'Delete book successfully'});
 });
 
 export default bookRouter;
